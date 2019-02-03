@@ -1,51 +1,70 @@
 package yoktavian.com.mvsp.screen.user
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import kotlinx.android.synthetic.main.user_detail_layout.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import yoktavian.com.mvsp.R
 import yoktavian.com.mvsp.base.BaseFragment
+import yoktavian.com.mvsp.data.User
+import yoktavian.com.mvsp.data.source.UserRepository
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Created by YudaOktavian on 03/02/2019
  */
-class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.Presenter, UserDetailScreen>(::UserDetailScreen) {
+class UserDetailScreen : BaseFragment<UserDetailScreen.State,
+        UserDetailScreen.Presenter,
+        UserDetailScreen>(::UserDetailScreen) {
+
     class State : BaseFragment.State() {
         var isLoading = false
         var isNetworkError = false
+        var userData : User? = null
     }
 
-    class Presenter(val state: State, val view: UserDetailScreen) : BaseFragment.Presenter(state, view) {
-        fun fetchUserDetail() {
+    class Presenter(state: State,
+                    view: UserDetailScreen,
+                    repository: UserRepository
+    ) : BaseFragment.Presenter<State, UserDetailScreen, UserRepository>(state, view, repository) {
+
+        suspend fun fetchUserDetail() {
             state.isLoading = true
             view.renderLoading()
-
             // get user detail from your API
             // region result
-            state.isLoading = false
-            view.renderLoading()
-            // region on success
-
-            // endregion
-
-            // region on error
-
-            // endregion
+            repository.getUserData { result ->
+                state.userData = result
+                view.renderUserDetail()
+                state.isLoading = false
+                view.renderLoading()
+            }
             // endregion
         }
     }
 
-    override val state: State get() = State()
+    override val state = State()
 
-    override val presenter: Presenter get() = Presenter(state, this)
+    override val presenter = Presenter(state, this, UserRepository())
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.user_detail_layout, container, false)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        activity {
-            if (state.isLoading) {
-                // view of loading must be visible
-            } else {
-                // view of loading must be gone
-            }
+        GlobalScope.launch(Dispatchers.Main) {
+            presenter.fetchUserDetail()
         }
+    }
+
+    fun renderUserDetail() {
+        fragmentTitle.text = state.userData?.name
     }
 
     /**
@@ -56,18 +75,15 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
      * changes that occur in State.
      */
     override fun renderLoading() {
-        super.renderLoading()
+//        super.renderLoading()
         /**
          * Call view to make sure this fragment
          * still alive to avoid memory leak.
          */
-        view {
-            if (state.isLoading) {
-                // view of loading must be visible
-            } else {
-                // view of loading must be gone
-            }
-        }
+//        view {
+            // view of loading must be VISIBLE when state isLoading, otherwise GONE
+            progressBar.visibility = View.VISIBLE.takeIf { state.isLoading } ?: View.GONE
+//        }
     }
 
     override fun renderNetworkError() {
@@ -79,5 +95,9 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                 // view of network error must be gone
             }
         }
+    }
+
+    companion object {
+        fun newInstance() = UserDetailScreen()
     }
 }
