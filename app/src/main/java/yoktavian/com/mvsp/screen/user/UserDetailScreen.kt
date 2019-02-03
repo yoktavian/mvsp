@@ -1,19 +1,18 @@
 package yoktavian.com.mvsp.screen.user
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.user_detail_layout.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import yoktavian.com.mvsp.R
 import yoktavian.com.mvsp.base.BaseFragment
 import yoktavian.com.mvsp.data.User
 import yoktavian.com.mvsp.data.source.UserRepository
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Created by YudaOktavian on 03/02/2019
@@ -75,20 +74,20 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State,
      * changes that occur in State.
      */
     override fun renderLoading() {
-//        super.renderLoading()
+        super.renderLoading()
         /**
-         * Call view to make sure this fragment
+         * Call fragment to make sure this fragment
          * still alive to avoid memory leak.
          */
-//        view {
+        fragment {
             // view of loading must be VISIBLE when state isLoading, otherwise GONE
             progressBar.visibility = View.VISIBLE.takeIf { state.isLoading } ?: View.GONE
-//        }
+        }
     }
 
     override fun renderNetworkError() {
         super.renderNetworkError()
-        view {
+        fragment {
             if (state.isNetworkError) {
                 // view of network error must be visible
             } else {
