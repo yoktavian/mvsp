@@ -11,7 +11,7 @@ abstract class BaseFragment<T, A, S: Fragment> (private val fragment: KFunction0
     Fragment(), BaseFragmentContract<T, A>, MainPresenter {
 
     open class State
-    open class Presenter(state: State, view: Fragment)
+    open class Presenter <S, F, T> (val state: S, val view: F, val repository: T)
 
     /**
      * It's safe closure lambda function. When screen
