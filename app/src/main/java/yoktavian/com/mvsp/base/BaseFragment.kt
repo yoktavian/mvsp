@@ -32,11 +32,9 @@ abstract class BaseFragment<T, A, S: Fragment> (private val fragment: KFunction0
      * it will safe, because the code inside closure lambda
      * not excecuted.
      */
-    fun view(vw: (view: Fragment) -> Unit) {
-        fragmentManager?.fragments?.let {
-            if (it.contains(fragment.invoke())) {
-                view(vw)
-            }
+    fun fragment(fragment: () -> Unit) {
+        if (!isDetached) {
+            fragment()
         }
     }
 
