@@ -2,7 +2,6 @@ package yoktavian.com.mvsp.base
 
 import android.app.Activity
 import android.support.v4.app.Fragment
-import kotlin.reflect.KFunction0
 
 /**
  * Created by YudaOktavian on 03/02/2019
@@ -31,9 +30,9 @@ abstract class BaseFragment<T, A> : Fragment(), BaseFragmentContract<T, A>, Main
      * it will safe, because the code inside closure lambda
      * not excecuted.
      */
-    fun fragment(fragment: () -> Unit) {
-        if (!isDetached) {
-            fragment()
+    fun fragment(fragment: (Fragment) -> Unit) {
+        if (isAdded) {
+            fragment(this)
         }
     }
 

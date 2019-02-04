@@ -8,13 +8,13 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.user_detail_layout.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import yoktavian.com.mvsp.R
 import yoktavian.com.mvsp.base.BaseFragment
 import yoktavian.com.mvsp.data.User
 import yoktavian.com.mvsp.data.source.UserRepository
-import kotlin.coroutines.CoroutineContext
+import yoktavian.com.mvsp.route.Router
+import yoktavian.com.mvsp.screen.home.HomeScreen
 
 /**
  * Created by YudaOktavian on 03/02/2019
@@ -57,8 +57,11 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                 view.renderUserDetail()
                 state.isLoading = false
                 view.renderLoading()
+
+                // view.fragment {
+                //     Router.go(it, HomeScreen.newInstance())
+                // }
             }
-            // endregion
         }
     }
 
@@ -78,7 +81,9 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
     }
 
     fun renderUserDetail() {
-        fragmentTitle.text = state.userData?.name
+        fragment {
+            fragmentTitle.text = state.userData?.name
+        }
     }
 
     /**
