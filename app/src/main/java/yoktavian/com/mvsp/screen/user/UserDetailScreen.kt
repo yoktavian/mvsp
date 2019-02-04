@@ -17,10 +17,7 @@ import yoktavian.com.mvsp.data.source.UserRepository
 /**
  * Created by YudaOktavian on 03/02/2019
  */
-class UserDetailScreen : BaseFragment<UserDetailScreen.State,
-        UserDetailScreen.Presenter,
-        UserDetailScreen>(::UserDetailScreen) {
-
+class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.Presenter>() {
     /**
      * Just make the default State inside this class.
      * Everything that is make the state changes will determine
