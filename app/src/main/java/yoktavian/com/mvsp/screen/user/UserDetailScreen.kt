@@ -8,11 +8,13 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.user_detail_layout.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import yoktavian.com.mvsp.R
 import yoktavian.com.mvsp.base.BaseFragment
 import yoktavian.com.mvsp.data.User
 import yoktavian.com.mvsp.data.source.UserRepository
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Created by YudaOktavian on 03/02/2019
@@ -90,7 +92,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State,
      * changes that occur in State.
      */
     override fun renderLoading() {
-        super.renderLoading()
+       super.renderLoading()
         /**
          * Call fragment to make sure this fragment
          * still alive to avoid memory leak.
