@@ -21,12 +21,28 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State,
         UserDetailScreen.Presenter,
         UserDetailScreen>(::UserDetailScreen) {
 
+    /**
+     * Just make the default State inside this class.
+     * Everything that is make the state changes will determine
+     * the View is updated. Every changes in State, make sure
+     * to calling render.
+     */
     class State : BaseFragment.State() {
         var isLoading = false
         var isNetworkError = false
         var userData : User? = null
     }
 
+    /**
+     * Presenter as default will have 3 params, that is State, View and Repository.
+     * State and view is accessible in view, while repository is not. Repo is visible
+     * just in Presenter. So if you needs to get data from Repository, make sure you calling
+     * the Presenter first inside the View, fetch the result in the State, then calling
+     * partial Render to update your View.
+     * @param state
+     * @param view
+     * @param repository
+     */
     class Presenter(state: State,
                     view: UserDetailScreen,
                     repository: UserRepository
