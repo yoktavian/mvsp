@@ -6,10 +6,9 @@ import android.support.v4.app.Fragment
 /**
  * Created by YudaOktavian on 03/02/2019
  */
-abstract class BaseFragment<T, A> : Fragment(), BaseFragmentContract<T, A>, MainPresenter {
+abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, MainPresenter {
 
-    open class State
-    open class Presenter <S, F, T> (val state: S, val view: F, val repository: T)
+    open class Presenter <S, V, R> (val state: S, val view: V, val repository: R)
 
     /**
      * It's safe closure lambda function. When screen
@@ -23,6 +22,7 @@ abstract class BaseFragment<T, A> : Fragment(), BaseFragmentContract<T, A>, Main
             act(it)
         }
     }
+
     /**
      * It's safe closure lambda function to get fragment. When screen
      * requires fragment/view, closure lambda will make sure
@@ -45,7 +45,7 @@ abstract class BaseFragment<T, A> : Fragment(), BaseFragmentContract<T, A>, Main
     override fun renderNetworkError() {}
 }
 
-interface BaseFragmentContract<T, A> {
-    val state: T
-    val presenter: A
+interface BaseFragmentContract<S, P> {
+    val state: S
+    val presenter: P
 }
