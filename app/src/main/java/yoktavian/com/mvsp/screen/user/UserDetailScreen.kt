@@ -26,7 +26,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
      * the View is updated. Every changes in State, make sure
      * to calling render.
      */
-    class State : BaseFragment.State() {
+    class State {
         var isLoading = false
         var isNetworkError = false
         var userData : User? = null
