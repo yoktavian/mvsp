@@ -47,7 +47,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                     repository: UserRepository
     ) : BaseFragment.Presenter<State, UserDetailScreen, UserRepository>(state, view, repository) {
 
-        suspend fun fetchUserDetail() {
+        fun fetchUserDetail() {
             state.isLoading = true
             view.renderLoading()
             // get user detail from your API
@@ -75,9 +75,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        GlobalScope.launch(Dispatchers.Main) {
-            presenter.fetchUserDetail()
-        }
+        presenter.fetchUserDetail()
     }
 
     fun renderUserDetail() {
