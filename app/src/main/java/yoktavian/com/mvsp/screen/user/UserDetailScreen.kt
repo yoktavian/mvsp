@@ -66,6 +66,8 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         }
 
         fun fetchBalance() {
+            // render loading first.
+            view.renderLoading()
             // get balance from repo
             repository.getBalance {
                 state.balance = it.balance

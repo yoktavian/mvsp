@@ -84,6 +84,22 @@ class UserDetailScreenTest :
     }
 
     @Test
+    fun `render loading should be called at most 2 times`() {
+        // given
+        every { view.renderLoading() } returns Unit
+        every { view.renderBalance() } returns Unit
+        every { userRepository.getBalance(captureLambda()) } answers {
+            lambda<(Wallet) -> Unit>().invoke(Wallet(100))
+        }
+        // when
+        presenter.fetchBalance()
+        // then
+        verify(atMost = 2) {
+            view.renderLoading()
+        }
+    }
+
+    @Test
     fun `render loading should be called after render balance`() {
         // given
         every { view.renderLoading() } returns Unit
