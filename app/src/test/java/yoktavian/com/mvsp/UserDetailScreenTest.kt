@@ -99,4 +99,39 @@ class UserDetailScreenTest :
             view.renderLoading()
         }
     }
+
+    @Test
+    fun `sample using sequence`() {
+        // given
+        every { view.renderLoading() } returns Unit
+        every { view.renderBalance() } returns Unit
+        every { userRepository.getBalance(captureLambda()) } answers {
+            lambda<(Wallet) -> Unit>().invoke(Wallet(1000))
+        }
+        // when
+        presenter.fetchBalance()
+        // then
+        verifySequence {
+            view.renderBalance()
+            view.renderLoading()
+        }
+    }
+
+    @Test
+    fun `confirm verified`() {
+        // given
+        every { view.renderLoading() } returns Unit
+        every { view.renderBalance() } returns Unit
+        every { userRepository.getBalance(captureLambda()) } answers {
+            lambda<(Wallet) -> Unit>().invoke(Wallet(1000))
+        }
+        // when
+        presenter.fetchBalance()
+        // then
+        verifySequence {
+            view.renderBalance()
+            view.renderLoading()
+        }
+        confirmVerified(view)
+    }
 }

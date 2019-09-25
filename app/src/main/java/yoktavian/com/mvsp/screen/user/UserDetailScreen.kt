@@ -65,7 +65,6 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
             }
         }
 
-
         fun fetchBalance() {
             // get balance from repo
             repository.getBalance {
@@ -80,7 +79,11 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.user_detail_layout, container, false)
     }
 
