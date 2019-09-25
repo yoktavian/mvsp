@@ -20,6 +20,10 @@ import yoktavian.com.mvsp.screen.home.HomeScreen
  * Created by YudaOktavian on 03/02/2019
  */
 class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.Presenter>() {
+
+    override val state = State()
+    override val presenter = Presenter(state, this, UserRepository())
+
     /**
      * Just make the default State inside this class.
      * Everything that is make the state changes will determine
@@ -29,7 +33,8 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
     class State {
         var isLoading = false
         var isNetworkError = false
-        var userData : User? = null
+        var userData: User? = null
+        var balance: Long = 0L
     }
 
     /**
@@ -57,17 +62,23 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                 view.renderUserDetail()
                 state.isLoading = false
                 view.renderLoading()
+            }
+        }
 
-                // view.fragment {
-                //     Router.go(it, HomeScreen.newInstance())
-                // }
+
+        fun fetchBalance() {
+            // get balance from repo
+            repository.getBalance {
+                state.balance = it.balance
+                // render balance after request complete & if balance > 0.
+                if (state.balance > 0) {
+                    view.renderBalance()
+                    // render loading again.
+                    view.renderLoading()
+                }
             }
         }
     }
-
-    override val state = State()
-
-    override val presenter = Presenter(state, this, UserRepository())
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.user_detail_layout, container, false)
@@ -111,6 +122,12 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
             } else {
                 // view of network error must be gone
             }
+        }
+    }
+
+    fun renderBalance() {
+        fragment {
+            balance.text = state.balance.toString()
         }
     }
 

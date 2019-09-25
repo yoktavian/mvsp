@@ -7,6 +7,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import yoktavian.com.mvsp.data.User
+import yoktavian.com.mvsp.data.Wallet
 import yoktavian.com.mvsp.data.source.UserRepository
 import yoktavian.com.mvsp.screen.user.UserDetailScreen
 
@@ -46,6 +47,55 @@ class UserDetailScreenTest :
             Assert.assertEquals(isLoading, false)
         }
         verify(exactly = 2) {
+            view.renderLoading()
+        }
+    }
+
+    @Test
+    fun `render balance should be called after success fetching balance from repo`() {
+        // given
+        every { view.renderLoading() } returns Unit
+        every { view.renderBalance() } returns Unit
+        every { userRepository.getBalance(captureLambda()) } answers {
+            lambda<(Wallet) -> Unit>().invoke(Wallet(1000))
+        }
+        // when
+        presenter.fetchBalance()
+        // then
+        verify {
+            view.renderBalance()
+        }
+    }
+
+    @Test
+    fun `render balance shouldn't be called when balance 0`() {
+        // given
+        every { view.renderLoading() } returns Unit
+        every { view.renderBalance() } returns Unit
+        every { userRepository.getBalance(captureLambda()) } answers {
+            lambda<(Wallet) -> Unit>().invoke(Wallet(0))
+        }
+        // when
+        presenter.fetchBalance()
+        // then
+        verify(exactly = 0) {
+            view.renderBalance()
+        }
+    }
+
+    @Test
+    fun `render loading should be called after render balance`() {
+        // given
+        every { view.renderLoading() } returns Unit
+        every { view.renderBalance() } returns Unit
+        every { userRepository.getBalance(captureLambda()) } answers {
+            lambda<(Wallet) -> Unit>().invoke(Wallet(1000))
+        }
+        // when
+        presenter.fetchBalance()
+        // then
+        verifyOrder {
+            view.renderBalance()
             view.renderLoading()
         }
     }
