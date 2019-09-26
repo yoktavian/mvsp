@@ -128,6 +128,7 @@ class UserDetailScreenTest :
         presenter.fetchBalance()
         // then
         verifySequence {
+            view.renderLoading()
             view.renderBalance()
             view.renderLoading()
         }
@@ -145,6 +146,7 @@ class UserDetailScreenTest :
         presenter.fetchBalance()
         // then
         verifySequence {
+            view.renderLoading()
             view.renderBalance()
             view.renderLoading()
         }
