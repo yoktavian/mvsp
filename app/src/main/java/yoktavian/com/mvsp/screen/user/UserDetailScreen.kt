@@ -57,11 +57,12 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                 view.renderUserDetail()
                 state.isLoading = false
                 view.renderLoading()
+            }
+        }
 
-                 view.activity {
-//                     Router.go(it, HomeScreen.newInstance())
-                     Router.goToNewActivityWithFragment(it, true, UserDetailScreenV2.newInstance())
-                 }
+        fun goToUserDetailV2() {
+            view.activity {
+                Router.goToNewActivityWithFragment(it, true, UserDetailScreenV2.newInstance())
             }
         }
     }
@@ -76,8 +77,15 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setActionClickListener()
         GlobalScope.launch(Dispatchers.Main) {
             presenter.fetchUserDetail()
+        }
+    }
+
+    fun setActionClickListener() {
+        fragmentTitle.setOnClickListener {
+            presenter.goToUserDetailV2()
         }
     }
 

@@ -19,7 +19,7 @@ class BasicActivity : AppCompatActivity() {
         val resultIntent = intent.getStringExtra(Router.FRAGMENT_TAG)
         if (resultIntent != null) {
             val fragment = PasserFragment.getFragment(resultIntent)
-            fragment?.let { set(true, it) }
+            fragment?.let { set(false, it) }
             Log.d("=>Res", "not null")
         }
     }
@@ -35,7 +35,7 @@ class BasicActivity : AppCompatActivity() {
         Log.d("=>Res", "set toolbar")
     }
 
-    override fun onNavigateUp(): Boolean {
+    override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
     }
