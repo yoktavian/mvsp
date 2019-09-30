@@ -19,7 +19,7 @@ class BasicActivity : AppCompatActivity() {
         val resultIntent = intent.getStringExtra(Router.FRAGMENT_TAG)
         if (resultIntent != null) {
             val fragment = PasserFragment.getFragment(resultIntent)
-            fragment?.let { set(false, it) }
+            fragment?.let { set(true, it) }
             Log.d("=>Res", "not null")
         }
     }
