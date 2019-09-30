@@ -19,7 +19,7 @@ import yoktavian.com.mvsp.screen.home.HomeScreen
 /**
  * Created by YudaOktavian on 03/02/2019
  */
-class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.Presenter>() {
+class UserDetailScreenV2 : BaseFragment<UserDetailScreenV2.State, UserDetailScreenV2.Presenter>() {
     /**
      * Just make the default State inside this class.
      * Everything that is make the state changes will determine
@@ -43,9 +43,9 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
      * @param repository
      */
     class Presenter(state: State,
-                    view: UserDetailScreen,
+                    view: UserDetailScreenV2,
                     repository: UserRepository
-    ) : BaseFragment.Presenter<State, UserDetailScreen, UserRepository>(state, view, repository) {
+    ) : BaseFragment.Presenter<State, UserDetailScreenV2, UserRepository>(state, view, repository) {
 
         suspend fun fetchUserDetail() {
             state.isLoading = true
@@ -53,15 +53,14 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
             // get user detail from your API
             // region result
             repository.getUserData { result ->
-                state.userData = result
+                state.userData = User("tes v2", "tes v2", 10)
                 view.renderUserDetail()
                 state.isLoading = false
                 view.renderLoading()
 
-                 view.activity {
-//                     Router.go(it, HomeScreen.newInstance())
-                     Router.goToNewActivityWithFragment(it, true, UserDetailScreenV2.newInstance())
-                 }
+                // view.fragment {
+                //     Router.go(it, HomeScreen.newInstance())
+                // }
             }
         }
     }
@@ -118,6 +117,6 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
     }
 
     companion object {
-        fun newInstance() = UserDetailScreen()
+        fun newInstance() = UserDetailScreenV2()
     }
 }
