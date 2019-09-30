@@ -19,7 +19,6 @@ class UserDetailScreenTest :
     BaseUnitTest<UserDetailScreen, UserDetailScreen.State, UserDetailScreen.Presenter>() {
 
     private val mockedUser = spyk(User("Tes", "Solo", 123))
-    private val mockedDefaultUser: User = mockk(relaxed = true)
     private val userRepository = spyk(UserRepository())
 
     @Before
@@ -27,10 +26,23 @@ class UserDetailScreenTest :
         view = spyk()
         state = spyk()
         presenter = spyk(UserDetailScreen.Presenter(state, view, userRepository))
+        // presenter = mockk()
     }
 
     @Test
-    fun `when fetch user detail, render loading should be called and must getting data from repo`() {
+    fun `test stubbing mockk & spyk`() {
+        /**
+         * Tanpa stubbing, method yang di panggil
+         * tidak akan tahu harus melakukan apa.
+         */
+        // setiap pemanggilan presenter.getBalance() akan di returns 0
+        // every { presenter.getBalance() } returns 0
+        print(presenter.getBalance())
+        presenter.getBalance()
+    }
+
+    @Test
+    fun `when fetch user detail, render loading should be called and getting data from repo`() {
         // given
         every { presenter.repository.getUserData(captureLambda()) } answers {
             lambda<(User) -> Unit>().invoke(mockedUser)
@@ -100,23 +112,6 @@ class UserDetailScreenTest :
     }
 
     @Test
-    fun `render loading should be called after render balance`() {
-        // given
-        every { view.renderLoading() } returns Unit
-        every { view.renderBalance() } returns Unit
-        every { userRepository.getBalance(captureLambda()) } answers {
-            lambda<(Wallet) -> Unit>().invoke(Wallet(1000))
-        }
-        // when
-        presenter.fetchBalance()
-        // then
-        verifyOrder {
-            view.renderBalance()
-            view.renderLoading()
-        }
-    }
-
-    @Test
     fun `sample using sequence`() {
         // given
         every { view.renderLoading() } returns Unit
@@ -135,6 +130,24 @@ class UserDetailScreenTest :
     }
 
     @Test
+    fun `render loading should be called after render balance`() {
+        // given
+        every { view.renderLoading() } returns Unit
+        every { view.renderBalance() } returns Unit
+        every { userRepository.getBalance(captureLambda()) } answers {
+            lambda<(Wallet) -> Unit>().invoke(Wallet(1000))
+        }
+        // when
+        presenter.fetchBalance()
+        // then
+        verifyOrder {
+            view.renderLoading()
+            view.renderBalance()
+            view.renderLoading()
+        }
+    }
+
+    @Test
     fun `confirm verified`() {
         // given
         every { view.renderLoading() } returns Unit
@@ -145,10 +158,9 @@ class UserDetailScreenTest :
         // when
         presenter.fetchBalance()
         // then
-        verifySequence {
+        verifyAll {
             view.renderLoading()
             view.renderBalance()
-            view.renderLoading()
         }
         confirmVerified(view)
     }

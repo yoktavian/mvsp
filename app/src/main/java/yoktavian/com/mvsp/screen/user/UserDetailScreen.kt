@@ -34,7 +34,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         var isLoading = false
         var isNetworkError = false
         var userData: User? = null
-        var balance: Long = 0L
+        var balance: Long = 100L
     }
 
     /**
@@ -79,6 +79,8 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                 }
             }
         }
+
+        fun getBalance() = state.balance
     }
 
     override fun onCreateView(
