@@ -1,5 +1,6 @@
 package yoktavian.com.mvsp.screen.user
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -63,6 +64,13 @@ class UserDetailScreenV2 : BaseFragment<UserDetailScreenV2.State, UserDetailScre
                 // }
             }
         }
+
+        fun finish() {
+            view.activity {
+                it.setResult(200)
+                it.finish()
+            }
+        }
     }
 
     override val state = State()
@@ -77,6 +85,13 @@ class UserDetailScreenV2 : BaseFragment<UserDetailScreenV2.State, UserDetailScre
         super.onViewCreated(view, savedInstanceState)
         GlobalScope.launch(Dispatchers.Main) {
             presenter.fetchUserDetail()
+        }
+        setActionClickListener()
+    }
+
+    fun setActionClickListener() {
+        fragmentTitle.setOnClickListener {
+            presenter.finish()
         }
     }
 

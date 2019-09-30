@@ -12,6 +12,7 @@ import yoktavian.com.mvsp.base.BasicActivity
  */
 object Router {
     const val FRAGMENT_TAG = "fragmentTag"
+    const val BACK_BUTTON_TAG = "backButtonTag"
 
     fun go(oldFrag: Fragment, newFrag: Fragment) {
         oldFrag.fragmentManager?.beginTransaction()?.add(R.id.frameContainer, newFrag)?.commit()
@@ -26,7 +27,11 @@ object Router {
         val fragmentTag = PasserFragment.setFragment(fragment)
         val intent = Intent(context, BasicActivity::class.java).apply {
             putExtra(FRAGMENT_TAG, fragmentTag)
+            putExtra(BACK_BUTTON_TAG, isEnableBackButton)
         }
-        context.startActivity(intent)
+        context.run {
+            if (requestCode != null) startActivityForResult(intent, requestCode)
+            else startActivity(intent)
+        }
     }
 }

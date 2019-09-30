@@ -1,10 +1,8 @@
 package yoktavian.com.mvsp.base
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
-import kotlinx.android.synthetic.main.activity_basic.*
+import android.support.v7.app.AppCompatActivity
 import yoktavian.com.mvsp.R
 import yoktavian.com.mvsp.route.PasserFragment
 import yoktavian.com.mvsp.route.Router
@@ -16,11 +14,13 @@ class BasicActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_basic)
-        val resultIntent = intent.getStringExtra(Router.FRAGMENT_TAG)
-        if (resultIntent != null) {
-            val fragment = PasserFragment.getFragment(resultIntent)
-            fragment?.let { set(true, it) }
-            Log.d("=>Res", "not null")
+        val resultFragment = intent.getStringExtra(Router.FRAGMENT_TAG)
+        val resultBackButton = intent.getBooleanExtra(Router.BACK_BUTTON_TAG, false)
+        if (resultFragment != null) {
+            val fragment = PasserFragment.getFragment(resultFragment)
+            fragment?.let {
+                set(resultBackButton, it)
+            }
         }
     }
 
@@ -32,7 +32,6 @@ class BasicActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true.takeIf { isBackButtonEnable } ?: false)
-        Log.d("=>Res", "set toolbar")
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -41,7 +40,6 @@ class BasicActivity : AppCompatActivity() {
     }
 
     private fun attachFragment(fragment: Fragment) {
-        Log.d("=>Res", "attach fragment")
         val fragmentManager = supportFragmentManager
         fragmentManager.beginTransaction().replace(R.id.frameContainer, fragment).commit()
         fragmentManager.executePendingTransactions()

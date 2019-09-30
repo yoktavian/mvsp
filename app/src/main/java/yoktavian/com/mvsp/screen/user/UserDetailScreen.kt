@@ -1,5 +1,6 @@
 package yoktavian.com.mvsp.screen.user
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -62,7 +63,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
 
         fun goToUserDetailV2() {
             view.activity {
-                Router.goToNewActivityWithFragment(it, true, UserDetailScreenV2.newInstance())
+                Router.goToNewActivityWithFragment(it, true, UserDetailScreenV2.newInstance(), 12345)
             }
         }
     }
@@ -81,6 +82,12 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         GlobalScope.launch(Dispatchers.Main) {
             presenter.fetchUserDetail()
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d("=>Res res frag", resultCode.toString())
+        Log.d("=>Res req frag", requestCode.toString())
     }
 
     fun setActionClickListener() {
