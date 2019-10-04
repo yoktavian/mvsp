@@ -4,6 +4,7 @@ import android.app.Activity
 import android.support.v4.app.Fragment
 import android.widget.Toast
 import kotlinx.coroutines.*
+import yoktavian.com.mvsp.BaseActivity
 
 /**
  * Created by YudaOktavian on 03/02/2019
@@ -71,10 +72,28 @@ abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, Main
             fragment(this)
         }
     }
+    // endregion
 
+    // region warning & message
     fun showToast(message: String) {
         activity {
             Toast.makeText(it, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun showModal(message: String) {
+        activity {
+            (it as? BaseActivity)?.run {
+                showModal(message)
+            }
+        }
+    }
+
+    fun dismissModal() {
+        activity {
+            (it as? BaseActivity)?.run {
+                dismissModal()
+            }
         }
     }
     // endregion
