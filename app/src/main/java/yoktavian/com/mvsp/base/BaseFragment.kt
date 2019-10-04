@@ -9,6 +9,8 @@ import kotlinx.coroutines.*
  */
 abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, MainPresenter {
 
+    private val parentJob = Job()
+
     open class Presenter <S, V, R> (val state: S, val view: V, val repository: R) {
         /**
          * Using this context to back to dispatcher main from dispatcher IO or Default.
@@ -16,7 +18,7 @@ abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, Main
          * caused a crash on the app, you should back to dispatcher Main so that you
          * can update the UI.
          */
-        fun UIContext(block: suspend CoroutineScope.() -> Unit): Job {
+        fun UIjob(block: suspend CoroutineScope.() -> Unit): Job {
             return GlobalScope.launch(Dispatchers.Main, block = block)
         }
     }
@@ -35,6 +37,28 @@ abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, Main
     }
 
     /**
+     * use it for IO needs like read write database, fetch data
+     * from API etc.
+     */
+    fun IOjob(block: suspend CoroutineScope.() -> Unit): Job {
+        return GlobalScope.launch(Dispatchers.IO + parentJob, block = block)
+    }
+
+    /**
+     * DFT means default. Use it for heavy computation, like parsing data or
+     * something else.
+     */
+    fun DFTjob(block: suspend CoroutineScope.() -> Unit): Job {
+        return GlobalScope.launch(Dispatchers.Default + parentJob, block = block)
+    }
+
+    // region handling lifecycle
+    override fun onDestroy() {
+        if (parentJob.isActive) parentJob.cancel()
+        super.onDestroy()
+    }
+
+    /**
      * It's safe closure lambda function to get fragment. When screen
      * requires fragment/view, closure lambda will make sure
      * you still have the view. if view destroyed
@@ -46,6 +70,7 @@ abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, Main
             fragment(this)
         }
     }
+    // endregion
 
     /**
      * As default screen needs two type of rendering,

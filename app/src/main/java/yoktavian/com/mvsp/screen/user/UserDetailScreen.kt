@@ -6,16 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.user_detail_layout.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import yoktavian.com.mvsp.R
 import yoktavian.com.mvsp.base.BaseFragment
 import yoktavian.com.mvsp.data.User
 import yoktavian.com.mvsp.data.source.UserRepository
-import yoktavian.com.mvsp.route.Router
-import yoktavian.com.mvsp.screen.home.HomeScreen
 
 /**
  * Created by YudaOktavian on 03/02/2019
@@ -49,17 +44,18 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
     ) : BaseFragment.Presenter<State, UserDetailScreen, UserRepository>(state, view, repository) {
 
         suspend fun fetchUserDetail() {
-            UIContext {
+            UIjob {
                 state.isLoading = true
                 view.renderLoading()
             }
             // get user detail from your API
             // region result
             repository.getUserData { result ->
+                Log.d("=>Res",  "getDataCompleted")
                 state.userData = result
                 state.isLoading = false
                 // rendering should using dispatcher main.
-                UIContext {
+                UIjob {
                     view.renderUserDetail()
                     view.renderLoading()
                 }
@@ -77,7 +73,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        GlobalScope.launch(Dispatchers.IO) {
+        IOjob {
             presenter.fetchUserDetail()
         }
     }
