@@ -9,6 +9,7 @@ import kotlinx.android.synthetic.main.user_detail_layout.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import yoktavian.com.mvsp.R
 import yoktavian.com.mvsp.base.BaseFragment
 import yoktavian.com.mvsp.data.User
@@ -48,19 +49,20 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
     ) : BaseFragment.Presenter<State, UserDetailScreen, UserRepository>(state, view, repository) {
 
         suspend fun fetchUserDetail() {
-            state.isLoading = true
-            view.renderLoading()
+            UIContext {
+                state.isLoading = true
+                view.renderLoading()
+            }
             // get user detail from your API
             // region result
             repository.getUserData { result ->
                 state.userData = result
-                view.renderUserDetail()
                 state.isLoading = false
-                view.renderLoading()
-
-                // view.fragment {
-                //     Router.go(it, HomeScreen.newInstance())
-                // }
+                // rendering should using dispatcher main.
+                UIContext {
+                    view.renderUserDetail()
+                    view.renderLoading()
+                }
             }
         }
     }
@@ -75,7 +77,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        GlobalScope.launch(Dispatchers.Main) {
+        GlobalScope.launch(Dispatchers.IO) {
             presenter.fetchUserDetail()
         }
     }
