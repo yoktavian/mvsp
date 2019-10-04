@@ -2,6 +2,7 @@ package yoktavian.com.mvsp.base
 
 import android.app.Activity
 import android.support.v4.app.Fragment
+import android.widget.Toast
 import kotlinx.coroutines.*
 
 /**
@@ -68,6 +69,12 @@ abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, Main
     fun fragment(fragment: (Fragment) -> Unit) {
         if (isAdded) {
             fragment(this)
+        }
+    }
+
+    fun showToast(message: String) {
+        activity {
+            Toast.makeText(it, message, Toast.LENGTH_SHORT).show()
         }
     }
     // endregion
