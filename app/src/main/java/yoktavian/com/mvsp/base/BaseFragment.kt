@@ -1,18 +1,39 @@
 package yoktavian.com.mvsp.base
 
 import android.app.Activity
+import android.arch.lifecycle.LifecycleOwner
+import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.widget.Toast
 import kotlinx.coroutines.*
+import java.lang.ref.WeakReference
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Created by YudaOktavian on 03/02/2019
  */
-abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, MainPresenter {
+abstract class BaseFragment<S, P> :
+    Fragment(), BaseFragmentContract<S, P>, MainPresenter {
 
-    private val parentJob = Job()
+    //    private val parentJob = Job()
+    private var weakReferenceFragment = WeakReference<Fragment>(null)
+    // lifecycle owner should be attached fragment.
+    /**
+     * Still unused for now.
+    private val lifecycleOwner: LifecycleOwner?
+        get() = weakReferenceFragment.get()
+    */
 
-    open class Presenter <S, V, R> (val state: S, val view: V, val repository: R) {
+    abstract class Presenter<S, V, R>(
+        val state: S,
+        val view: V,
+        val repository: R
+    ) : CoroutineScope {
+
+        private val parentJob = Job()
+        override val coroutineContext: CoroutineContext
+            get() = parentJob
+
         /**
          * Using this context to back to dispatcher main from dispatcher IO or Default.
          * You know that if we are in IO or Default then trying to rendering UI, it will
@@ -20,8 +41,46 @@ abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, Main
          * can update the UI.
          */
         fun UIjob(block: suspend CoroutineScope.() -> Unit): Job {
-            return GlobalScope.launch(Dispatchers.Main, block = block)
+            return launch(Dispatchers.Main + parentJob, block = block)
         }
+
+        /**
+         * DFT means default. Use it for heavy computation, like parsing data or
+         * something else.
+         */
+        fun DFTjob(block: suspend CoroutineScope.() -> Unit): Job {
+            return launch(Dispatchers.Default + parentJob, block = block)
+        }
+
+        /**
+         * IO job. Use it for network operation.
+         */
+        fun IOjob(block: suspend CoroutineScope.() -> Unit): Job {
+            return launch(Dispatchers.Default + parentJob, block = block)
+        }
+
+        fun onCreate() {}
+        fun onResume() {}
+        fun onDestroy() {
+            if (parentJob.isActive) parentJob.cancel()
+        }
+    }
+
+    // region lifecycle
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        weakReferenceFragment = WeakReference(this)
+        (presenter as? Presenter<*, *, *>)?.onCreate()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (presenter as? Presenter<*, *, *>)?.onResume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        (presenter as? Presenter<*, *, *>)?.onDestroy()
     }
 
     /**
@@ -32,31 +91,7 @@ abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, Main
      * not excecuted.
      */
     fun activity(act: (Activity) -> Unit) {
-        activity?.let {
-            act(it)
-        }
-    }
-
-    /**
-     * use it for IO needs like read write database, fetch data
-     * from API etc.
-     */
-    fun IOjob(block: suspend CoroutineScope.() -> Unit): Job {
-        return GlobalScope.launch(Dispatchers.IO + parentJob, block = block)
-    }
-
-    /**
-     * DFT means default. Use it for heavy computation, like parsing data or
-     * something else.
-     */
-    fun DFTjob(block: suspend CoroutineScope.() -> Unit): Job {
-        return GlobalScope.launch(Dispatchers.Default + parentJob, block = block)
-    }
-
-    // region handling lifecycle
-    override fun onDestroy() {
-        if (parentJob.isActive) parentJob.cancel()
-        super.onDestroy()
+        if (isFragmentAlive()) activity?.let { act(it) }
     }
 
     /**
@@ -67,17 +102,21 @@ abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, Main
      * not excecuted.
      */
     fun fragment(fragment: (Fragment) -> Unit) {
-        if (isAdded) {
-            fragment(this)
-        }
+        if (isFragmentAlive()) fragment(this)
     }
+
+    private fun isFragmentAlive() =
+        weakReferenceFragment.get() != null &&
+                isAdded &&
+                !isRemoving &&
+                !isDetached
+    // endregion
 
     fun showToast(message: String) {
         activity {
             Toast.makeText(it, message, Toast.LENGTH_SHORT).show()
         }
     }
-    // endregion
 
     /**
      * As default screen needs two type of rendering,
@@ -85,6 +124,7 @@ abstract class BaseFragment<S, P> : Fragment(), BaseFragmentContract<S, P>, Main
      * the screen doesn't support this.
      */
     override fun renderLoading() {}
+
     override fun renderNetworkError() {}
 }
 

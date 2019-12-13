@@ -43,21 +43,22 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                     repository: UserRepository
     ) : BaseFragment.Presenter<State, UserDetailScreen, UserRepository>(state, view, repository) {
 
-        suspend fun fetchUserDetail() {
+        fun fetchUserDetail() {
             UIjob {
                 state.isLoading = true
                 view.renderLoading()
             }
             // get user detail from your API
             // region result
-            repository.getUserData { result ->
-                Log.d("=>Res",  "getDataCompleted")
-                state.userData = result
-                state.isLoading = false
-                // rendering should using dispatcher main.
-                UIjob {
-                    view.renderUserDetail()
-                    view.renderLoading()
+            IOjob {
+                repository.getUserData { result ->
+                    state.userData = result
+                    state.isLoading = false
+                    // rendering should using dispatcher main.
+                    UIjob {
+                        view.renderUserDetail()
+                        view.renderLoading()
+                    }
                 }
             }
         }
@@ -67,15 +68,17 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
 
     override val presenter = Presenter(state, this, UserRepository())
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.user_detail_layout, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        IOjob {
-            presenter.fetchUserDetail()
-        }
+        presenter.fetchUserDetail()
     }
 
     fun renderUserDetail() {
