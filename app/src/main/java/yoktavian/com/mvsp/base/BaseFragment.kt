@@ -62,6 +62,8 @@ abstract class BaseFragment<S, P> :
         fun onCreate() {}
         fun onResume() {}
         fun onDestroy() {
+            // keep all operation to be safe. if fragment
+            // already destroyed, it will cancel all jobs.
             if (parentJob.isActive) parentJob.cancel()
         }
     }
