@@ -108,7 +108,7 @@ abstract class BaseFragment<S: Any, P: Any> :
      * it will safe, because the code inside closure lambda
      * not excecuted.
      */
-    fun fragment(fragment: (Fragment) -> Unit) {
+    fun requireFragment(fragment: (Fragment) -> Unit) {
         if (isFragmentAlive()) fragment(this)
     }
 

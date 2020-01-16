@@ -1,12 +1,10 @@
 package yoktavian.com.mvsp.screen.user
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.user_detail_layout.*
-import kotlinx.coroutines.*
 import yoktavian.com.mvsp.R
 import yoktavian.com.mvsp.base.BaseFragment
 import yoktavian.com.mvsp.data.User
@@ -84,9 +82,9 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
     override fun renderAll(state: State) {
         /**
          * Call fragment to make sure this fragment
-         * still alive to avoid memory leak.
+         * still alive to avoid memory leak or crash.
          */
-        fragment {
+        requireFragment {
             renderLoading(state)
             renderUserDetail(state)
         }
