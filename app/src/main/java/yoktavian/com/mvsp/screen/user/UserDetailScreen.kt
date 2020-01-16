@@ -11,6 +11,8 @@ import yoktavian.com.mvsp.R
 import yoktavian.com.mvsp.base.BaseFragment
 import yoktavian.com.mvsp.data.User
 import yoktavian.com.mvsp.data.source.UserRepository
+import yoktavian.com.mvsp.helper.csText
+import yoktavian.com.mvsp.helper.csVisibility
 
 /**
  * Created by YudaOktavian on 03/02/2019
@@ -46,7 +48,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         fun fetchUserDetail() {
             UIjob {
                 state.isLoading = true
-                view.renderLoading()
+                view.renderAll(state)
             }
             // get user detail from your API
             // region result
@@ -56,17 +58,15 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                     state.isLoading = false
                     // rendering should using dispatcher main.
                     UIjob {
-                        view.renderUserDetail()
-                        view.renderLoading()
+                        view.renderAll(state)
                     }
                 }
             }
         }
     }
 
-    override val state = State()
-
-    override val presenter = Presenter(state, this, UserRepository())
+    override fun initState() = State()
+    override fun initPresenter(state: State) = Presenter(state, this, UserRepository())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,10 +81,19 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         presenter.fetchUserDetail()
     }
 
-    fun renderUserDetail() {
+    override fun renderAll(state: State) {
+        /**
+         * Call fragment to make sure this fragment
+         * still alive to avoid memory leak.
+         */
         fragment {
-            fragmentTitle.text = state.userData?.name
+            renderLoading(state)
+            renderUserDetail(state)
         }
+    }
+
+    private fun renderUserDetail(state: State) {
+        fragmentTitle.csText = state.userData?.name
     }
 
     /**
@@ -94,26 +103,16 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
      * So you must calling partial render, based on
      * changes that occur in State.
      */
-    override fun renderLoading() {
-       super.renderLoading()
-        /**
-         * Call fragment to make sure this fragment
-         * still alive to avoid memory leak.
-         */
-        fragment {
-            // view of loading must be VISIBLE when state isLoading, otherwise GONE
-            progressBar.visibility = View.VISIBLE.takeIf { state.isLoading } ?: View.GONE
-        }
+    override fun renderLoading(state: State) {
+        // view of loading must be VISIBLE when state isLoading, otherwise GONE
+        progressBar.csVisibility = View.VISIBLE.takeIf { state.isLoading } ?: View.GONE
     }
 
-    override fun renderNetworkError() {
-        super.renderNetworkError()
-        fragment {
-            if (state.isNetworkError) {
-                // view of network error must be visible
-            } else {
-                // view of network error must be gone
-            }
+    override fun renderNetworkError(state: State) {
+        if (state.isNetworkError) {
+            // view of network error must be visible
+        } else {
+            // view of network error must be gone
         }
     }
 

@@ -1,7 +1,6 @@
 package yoktavian.com.mvsp.base
 
 import android.app.Activity
-import android.arch.lifecycle.LifecycleOwner
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.widget.Toast
@@ -9,15 +8,22 @@ import kotlinx.coroutines.*
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 
-/**
- * Created by YudaOktavian on 03/02/2019
- */
-abstract class BaseFragment<S, P> :
-    Fragment(), BaseFragmentContract<S, P>, MainPresenter {
+abstract class BaseFragment<S: Any, P: Any> :
+    Fragment(), BaseFragmentContract<S, P> {
 
-    //    private val parentJob = Job()
+    // private val parentJob = Job()
     private var weakReferenceFragment = WeakReference<Fragment>(null)
     // lifecycle owner should be attached fragment.
+    private var baseHolder: BaseDataHolder<S, P>? = null
+    val presenter: P get() {
+        return if (baseHolder == null) {
+            val state = initState()
+            val presenter = initPresenter(state)
+            baseHolder = BaseDataHolder(state, presenter)
+            presenter
+        } else baseHolder!!.presenter!! // should be safe operation because inside of if code block
+        // already init the state and presenter.
+    }
     /**
      * Still unused for now.
     private val lifecycleOwner: LifecycleOwner?
@@ -68,7 +74,6 @@ abstract class BaseFragment<S, P> :
         }
     }
 
-    // region lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         weakReferenceFragment = WeakReference(this)
@@ -119,18 +124,9 @@ abstract class BaseFragment<S, P> :
             Toast.makeText(it, message, Toast.LENGTH_SHORT).show()
         }
     }
-
-    /**
-     * As default screen needs two type of rendering,
-     * loading and error network. Just ignore when
-     * the screen doesn't support this.
-     */
-    override fun renderLoading() {}
-
-    override fun renderNetworkError() {}
 }
 
-interface BaseFragmentContract<S, P> {
-    val state: S
-    val presenter: P
+interface BaseFragmentContract<S, P>: Contract.View<S> {
+    fun initState(): S
+    fun initPresenter(state: S): P
 }
