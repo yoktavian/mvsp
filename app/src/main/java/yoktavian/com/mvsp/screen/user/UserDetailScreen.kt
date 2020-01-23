@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.user_detail_layout.*
 import yoktavian.com.mvsp.R
-import yoktavian.com.mvsp.base.BaseFragment
+import yoktavian.com.mvsp.base.ui.BaseFragment
 import yoktavian.com.mvsp.data.User
 import yoktavian.com.mvsp.data.source.UserRepository
 import yoktavian.com.mvsp.helper.csText

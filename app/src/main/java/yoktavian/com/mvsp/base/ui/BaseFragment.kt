@@ -1,4 +1,4 @@
-package yoktavian.com.mvsp.base
+package yoktavian.com.mvsp.base.ui
 
 import android.app.Activity
 import android.os.Bundle
@@ -19,7 +19,8 @@ abstract class BaseFragment<S: Any, P: Any> :
         return if (baseHolder == null) {
             val state = initState()
             val presenter = initPresenter(state)
-            baseHolder = BaseDataHolder(state, presenter)
+            baseHolder =
+                BaseDataHolder(state, presenter)
             presenter
         } else baseHolder!!.presenter!! // should be safe operation because inside of if code block
         // already init the state and presenter.
