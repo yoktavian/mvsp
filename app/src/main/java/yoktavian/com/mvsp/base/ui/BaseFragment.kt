@@ -1,16 +1,22 @@
 package yoktavian.com.mvsp.base.ui
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import kotlinx.coroutines.*
+import yoktavian.com.mvsp.R
+import yoktavian.com.mvsp.util.getString
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 
 abstract class BaseFragment<S: Any, P: Any> :
     Fragment(), BaseFragmentContract<S, P> {
 
+    // set screen title inside your fragment on init. it's will be
+    // default name of your screen, get from app name.
+    var screenTitle = R.string.app_name.getString()
     // private val parentJob = Job()
     private var weakReferenceFragment = WeakReference<Fragment>(null)
     // lifecycle owner should be attached fragment.
@@ -79,6 +85,12 @@ abstract class BaseFragment<S: Any, P: Any> :
         super.onCreate(savedInstanceState)
         weakReferenceFragment = WeakReference(this)
         (presenter as? Presenter<*, *, *>)?.onCreate()
+        // set title text.
+        activity {
+            if (it is BasicActivity) {
+                it.setTitle(screenTitle)
+            }
+        }
     }
 
     override fun onResume() {
@@ -89,6 +101,10 @@ abstract class BaseFragment<S: Any, P: Any> :
     override fun onDestroy() {
         super.onDestroy()
         (presenter as? Presenter<*, *, *>)?.onDestroy()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     /**

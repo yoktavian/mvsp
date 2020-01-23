@@ -1,7 +1,7 @@
 package yoktavian.com.mvsp
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import yoktavian.com.mvsp.screen.user.UserDetailScreen
 
 class BaseActivity : AppCompatActivity() {
