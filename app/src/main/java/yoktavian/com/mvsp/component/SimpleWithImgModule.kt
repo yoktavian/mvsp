@@ -1,0 +1,40 @@
+package yoktavian.com.mvsp.component
+
+import android.view.LayoutInflater
+import android.view.View
+import kotlinx.android.synthetic.main.simple_list_w_img_layout.view.*
+import yoktavian.com.mvsp.R
+import yoktavian.com.mvsp.base.ui.BaseModule
+import yoktavian.com.mvsp.helper.asViewGroup
+import yoktavian.com.mvsp.helper.csText
+
+class SimpleWithImgModule(
+    private val view: View
+) : BaseModule<SimpleWithImgModule.State, SimpleWithImgModule>(view) {
+
+    class State {
+        var sampleText: String = ""
+        var image: Int = 0
+    }
+
+    override val internalState: State = State()
+
+    override fun render() {
+        view.apply {
+            sampleText.csText = internalState.sampleText
+            launcher.setImageResource(internalState.image)
+        }
+    }
+
+    override fun bindState(state: State.() -> Unit): SimpleWithImgModule {
+        state(internalState)
+        return this
+    }
+
+    companion object {
+        fun createView(view: View): View {
+            return LayoutInflater.from(view.context)
+                .inflate(R.layout.simple_list_w_img_layout, view.asViewGroup(), false)
+        }
+    }
+}

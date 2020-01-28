@@ -1,12 +1,16 @@
 package yoktavian.com.mvsp.screen.user
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.user_detail_layout.*
 import yoktavian.com.mvsp.R
+import yoktavian.com.mvsp.base.ui.BaseAdapter
 import yoktavian.com.mvsp.base.ui.BaseFragment
+import yoktavian.com.mvsp.component.SimpleModule
+import yoktavian.com.mvsp.component.SimpleWithImgModule
 import yoktavian.com.mvsp.data.User
 import yoktavian.com.mvsp.data.source.UserRepository
 import yoktavian.com.mvsp.helper.csText
@@ -25,7 +29,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
     class State {
         var isLoading = false
         var isNetworkError = false
-        var userData : User? = null
+        var userData: User? = null
     }
 
     /**
@@ -38,9 +42,10 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
      * @param view
      * @param repository
      */
-    class Presenter(state: State,
-                    view: UserDetailScreen,
-                    repository: UserRepository
+    class Presenter(
+        state: State,
+        view: UserDetailScreen,
+        repository: UserRepository
     ) : BaseFragment.Presenter<State, UserDetailScreen, UserRepository>(state, view, repository) {
 
         fun fetchUserDetail() {
@@ -61,6 +66,10 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                 }
             }
         }
+
+        override fun onCreate() {
+            Log.d("=>Res", "onCreate user detail")
+        }
     }
 
     override fun initState() = State()
@@ -70,7 +79,11 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.user_detail_layout, container, false)
     }
 
@@ -87,6 +100,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         requireFragment {
             renderLoading(state)
             renderUserDetail(state)
+            renderTestingAdapter()
         }
     }
 
@@ -112,6 +126,30 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         } else {
             // view of network error must be gone
         }
+    }
+
+    private fun renderTestingAdapter() {
+        val listModul = listOf(
+            SimpleModule(SimpleModule.createView(recyclerView))
+                .bindState {
+                    sampleText = "tes 1"
+                },
+            SimpleModule(SimpleModule.createView(recyclerView))
+                .bindState {
+                    sampleText = "tes 2"
+                },
+            SimpleWithImgModule(SimpleWithImgModule.createView(recyclerView))
+                .bindState {
+                    sampleText = "tes 2"
+                    image = R.mipmap.ic_launcher
+                },
+            SimpleWithImgModule(SimpleWithImgModule.createView(recyclerView))
+                .bindState {
+                    sampleText = "apa aja cuy 2"
+                    image = R.mipmap.ic_launcher
+                }
+        )
+        recyclerView.adapter = BaseAdapter(listModul)
     }
 
     companion object {

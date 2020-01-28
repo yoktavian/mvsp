@@ -1,6 +1,7 @@
 package yoktavian.com.mvsp.helper
 
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 
 /**
@@ -17,3 +18,5 @@ inline var View.csVisibility
     set(value) {
         if (value != visibility) visibility = value
     }
+
+fun View.asViewGroup() = this as ViewGroup
