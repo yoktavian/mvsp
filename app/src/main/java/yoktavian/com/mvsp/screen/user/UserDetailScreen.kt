@@ -67,8 +67,12 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
             }
         }
 
-        override fun onCreate() {
-            Log.d("=>Res", "onCreate user detail")
+        fun testingOne() {
+            view.showToast("Testing one")
+        }
+
+        fun testingTwo() {
+            view.showToast("Testing two")
         }
     }
 
@@ -142,11 +146,17 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                 .bindState {
                     sampleText = "tes 2"
                     image = R.mipmap.ic_launcher
+                    onClickListener = {
+                        presenter.testingOne()
+                    }
                 },
             SimpleWithImgModule(SimpleWithImgModule.createView(recyclerView))
                 .bindState {
                     sampleText = "apa aja cuy 2"
                     image = R.mipmap.ic_launcher
+                    onClickListener = {
+                        presenter.testingTwo()
+                    }
                 }
         )
         recyclerView.adapter = BaseAdapter(listModul)

@@ -15,6 +15,7 @@ class SimpleWithImgModule(
     class State {
         var sampleText: String = ""
         var image: Int = 0
+        var onClickListener: ((View) -> Unit)? = null
     }
 
     override val internalState: State = State()
@@ -23,6 +24,7 @@ class SimpleWithImgModule(
         view.apply {
             sampleText.csText = internalState.sampleText
             launcher.setImageResource(internalState.image)
+            setOnClickListener(internalState.onClickListener)
         }
     }
 

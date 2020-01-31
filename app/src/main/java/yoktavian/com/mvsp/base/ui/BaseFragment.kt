@@ -72,7 +72,7 @@ abstract class BaseFragment<S: Any, P: Any> :
             return launch(Dispatchers.Default + parentJob, block = block)
         }
 
-        abstract fun onCreate()
+        fun onCreate() {}
         fun onResume() {}
         fun onDestroy() {
             // keep all operation to be safe. if fragment
