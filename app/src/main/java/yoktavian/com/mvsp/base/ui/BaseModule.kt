@@ -7,4 +7,5 @@ abstract class BaseModule<S, M>(view: View) : RecyclerView.ViewHolder(view),
     ModuleContract<S> {
     abstract fun render()
     abstract fun bindState(state: S.() -> Unit): M
+    abstract fun setIdentifier(identifier: String): M
 }

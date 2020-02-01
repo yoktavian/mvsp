@@ -5,8 +5,8 @@ import android.view.View
 import kotlinx.android.synthetic.main.simple_list_w_img_layout.view.*
 import yoktavian.com.mvsp.R
 import yoktavian.com.mvsp.base.ui.BaseModule
-import yoktavian.com.mvsp.helper.asViewGroup
-import yoktavian.com.mvsp.helper.csText
+import yoktavian.com.mvsp.util.asViewGroup
+import yoktavian.com.mvsp.util.csText
 
 class SimpleWithImgModule(
     private val view: View
@@ -19,6 +19,7 @@ class SimpleWithImgModule(
     }
 
     override val internalState: State = State()
+    override var identifier: String = ""
 
     override fun render() {
         view.apply {
@@ -30,6 +31,11 @@ class SimpleWithImgModule(
 
     override fun bindState(state: State.() -> Unit): SimpleWithImgModule {
         state(internalState)
+        return this
+    }
+
+    override fun setIdentifier(identifier: String): SimpleWithImgModule {
+        this.identifier = identifier
         return this
     }
 

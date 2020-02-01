@@ -1,20 +1,21 @@
 package yoktavian.com.mvsp.screen.user
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.user_detail_layout.*
 import yoktavian.com.mvsp.R
 import yoktavian.com.mvsp.base.ui.BaseAdapter
 import yoktavian.com.mvsp.base.ui.BaseFragment
+import yoktavian.com.mvsp.component.NestedModule
 import yoktavian.com.mvsp.component.SimpleModule
 import yoktavian.com.mvsp.component.SimpleWithImgModule
 import yoktavian.com.mvsp.data.User
 import yoktavian.com.mvsp.data.source.UserRepository
-import yoktavian.com.mvsp.helper.csText
-import yoktavian.com.mvsp.helper.csVisibility
+import yoktavian.com.mvsp.util.csText
+import yoktavian.com.mvsp.util.csVisibility
 
 /**
  * Created by YudaOktavian on 03/02/2019
@@ -30,6 +31,9 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         var isLoading = false
         var isNetworkError = false
         var userData: User? = null
+        var categoryProducts: List<String> = listOf(
+            "Promo", "New User", "Special Akhir Tahun"
+        )
     }
 
     /**
@@ -78,9 +82,12 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
 
     override fun initState() = State()
     override fun initPresenter(state: State) = Presenter(state, this, UserRepository())
+    private val adapter: BaseAdapter = BaseAdapter()
+    private val recyclerviewPool = RecyclerView.RecycledViewPool()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        presenter.fetchUserDetail()
     }
 
     override fun onCreateView(
@@ -93,7 +100,10 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter.fetchUserDetail()
+        recyclerView.apply {
+            adapter = this@UserDetailScreen.adapter
+            setRecycledViewPool(this@UserDetailScreen.recyclerviewPool)
+        }
     }
 
     override fun renderAll(state: State) {
@@ -104,7 +114,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         requireFragment {
             renderLoading(state)
             renderUserDetail(state)
-            renderTestingAdapter()
+            renderTestingAdapter(state)
         }
     }
 
@@ -132,16 +142,22 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
         }
     }
 
-    private fun renderTestingAdapter() {
-        val listModul = listOf(
+    private fun renderTestingAdapter(state: State) {
+        val categoriesModule = state.categoryProducts.mapIndexed { index, text ->
+            SimpleModule(SimpleModule.createView(recyclerView))
+                .bindState {
+                    sampleText = text
+                }.setIdentifier("nested-identifier-$index")
+        }
+        val listModule = listOf(
             SimpleModule(SimpleModule.createView(recyclerView))
                 .bindState {
                     sampleText = "tes 1"
-                },
+                }.setIdentifier("identifier 1"),
             SimpleModule(SimpleModule.createView(recyclerView))
                 .bindState {
                     sampleText = "tes 2"
-                },
+                }.setIdentifier("identifier 2"),
             SimpleWithImgModule(SimpleWithImgModule.createView(recyclerView))
                 .bindState {
                     sampleText = "tes 2"
@@ -149,7 +165,7 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                     onClickListener = {
                         presenter.testingOne()
                     }
-                },
+                }.setIdentifier("identifier 3"),
             SimpleWithImgModule(SimpleWithImgModule.createView(recyclerView))
                 .bindState {
                     sampleText = "apa aja cuy 2"
@@ -157,9 +173,14 @@ class UserDetailScreen : BaseFragment<UserDetailScreen.State, UserDetailScreen.P
                     onClickListener = {
                         presenter.testingTwo()
                     }
-                }
+                }.setIdentifier("identifier 4"),
+            NestedModule(NestedModule.createView(recyclerView))
+                .bindState {
+                    modules = categoriesModule
+                    viewPool = recyclerviewPool
+                }.setIdentifier("identifier 5")
         )
-        recyclerView.adapter = BaseAdapter(listModul)
+        adapter.set(listModule)
     }
 
     companion object {
